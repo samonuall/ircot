@@ -681,6 +681,7 @@ class StepByStepLLMTitleGenParticipant(ParticipantModel):
         if self.prompt_question:
             question_text += self.prompt_question
         else:
+            # NOTE: this is where I will need to change the prompt for retrieving theorems with preconditions
             question_text += (
                 f"Read the information given above to answer this question, and "
                 f"generate titles of {self.retrieval_count} additional Wikipedia pages that have relevant information to answer this question."

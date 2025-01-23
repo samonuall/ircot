@@ -19,6 +19,7 @@ async def retrieve(arguments: Request):  # see the corresponding method in unifi
     retrieval_method = arguments.pop("retrieval_method")
     assert retrieval_method in ("retrieve_from_elasticsearch")
     start_time = perf_counter()
+    # NOTE: Line 45 in interactive_query.py specifies what the retrieval object looks like
     retrieval = getattr(retriever, retrieval_method)(**arguments)
     end_time = perf_counter()
     time_in_seconds = round(end_time - start_time, 1)

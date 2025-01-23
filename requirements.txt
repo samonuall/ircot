@@ -6,7 +6,7 @@ sentencepiece
 protobuf==3.19.0
 nltk
 scipy
-openai
+openai==1.59.9
 diskcache
 typing_extensions<4.6.0
 spacy==3.4.1 # Only for one of the experiments.
