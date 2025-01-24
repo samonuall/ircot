@@ -95,7 +95,7 @@ class GPT3Generator:
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0,
-        stop=["."], # NOTE: changed from \n to . since gpt3.5-turbo-instruct always starts with \n
+        stop=["\n"], # NOTE: changed from \n to . since gpt3.5-turbo-instruct always starts with \n
         retry_after_n_seconds=None,
         n=1,
         best_of=1,
@@ -147,7 +147,8 @@ class GPT3Generator:
         #     tokenizer_model_name="gpt2",  # did this before tiktoken was released.
         #     last_is_test_example=True,
         # )
-
+        print("-" * 100, "PROMPT", prompt)
+        
         arguments = {
             "model": self.model,
             "prompt": prompt,
@@ -161,6 +162,8 @@ class GPT3Generator:
             "presence_penalty": self.presence_penalty,
             "stop": self.stop,
         }
+
+        print("-" * 100, "STOP", self.stop)
         if self.best_of is not None:
             arguments["best_of"] = self.best_of
 
@@ -221,4 +224,5 @@ class GPT3Generator:
             else:
                 output_seq_score.append((choice.text, index))
 
+        print("-" * 100, "OUTPUT TEXT", response.choices)
         return sorted(output_seq_score, key=lambda x: x[1])
