@@ -302,3 +302,4 @@ if __name__ == "__main__":
     es.indices.refresh(elasticsearch_index)  # actually updates the count.
     document_count = result[0]
     print(f"Index {elasticsearch_index} is ready. Added {document_count} documents.")
+

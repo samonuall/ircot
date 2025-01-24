@@ -16,15 +16,48 @@ from commaqa.models.gpt3generator import GPT3Generator
 from commaqa.models.llm_client_generator import LLMClientGenerator
 from commaqa.inference.dataset_readers import get_pid_for_title_paragraph_text
 
+import regex
+
 
 random.seed(100)  # Don't change.
 
 
-@lru_cache(maxsize=None)
-def get_spacy_object():
-    import spacy
+# @lru_cache(maxsize=None)
+# def get_spacy_object():
+#     import spacy
 
-    return spacy.load("en_core_web_sm")
+#     return spacy.load("en_core_web_sm")
+
+def split_sentences(text):
+    """
+    Splits the input text into sentences, ensuring that abbreviations are not considered as sentence boundaries.
+
+    Args:
+        text (str): The text to split.
+        abbreviations (list): A list of abbreviation strings.
+
+    Returns:
+        list: A list of sentences.
+    """
+    abbreviations = [
+        "Mr", "Mrs", "Ms", "Dr", "Prof", "Sr", "Jr", "St", "Lt", "Capt",
+        "Sgt", "Mt", "Rd", "Ave", "Inc", "Ltd", "Col", "Gen", "Rep", "Sen",
+        "U.S", "U.K", "e.g", "i.e", "vs", "etc"
+    ]
+   
+    # Create a regex pattern for abbreviations
+    abbrev_pattern = r'\b(?:' + '|'.join(regex.escape(abbrev) for abbrev in abbreviations) + r')\.$'
+    
+    # Pattern to identify sentence boundaries using `regex` for variable-width lookbehind
+    sentence_endings = regex.compile(
+        r'(?<!\b(?:' + '|'.join(regex.escape(abbrev) for abbrev in abbreviations) + r'))'  # Negative lookbehind for abbreviations
+        r'(?<=[.!?])\s+'  # Look for ., !, or ? followed by whitespace
+    )
+    
+    # Split the text using the sentence boundary pattern
+    sentences = sentence_endings.split(text)
+    
+    return sentences
 
 
 def is_reasoning_sentence(sentence: str) -> bool:
@@ -737,7 +770,7 @@ class StepByStepCOTGenParticipant(ParticipantModel):
         **kwargs,
     ):
 
-        import spacy  # Kept here because it's almost always not required, and it's slow.
+        # import spacy  # Kept here because it's almost always not required, and it's slow.
 
         self.num_calls = 0
         self.next_model = next_model
@@ -783,7 +816,7 @@ class StepByStepCOTGenParticipant(ParticipantModel):
         self.question_prefix = question_prefix
 
         # Run 'python -m spacy download en_core_web_sm' if not downloaded already.
-        self.spacy_object = spacy.load("en_core_web_sm")
+        # self.spacy_object = spacy.load("en_core_web_sm")
 
     def return_model_calls(self):
         return {"step_by_step_cot": self.num_calls}
@@ -844,9 +877,12 @@ class StepByStepCOTGenParticipant(ParticipantModel):
                 print("Can not handle more than one answer for this model yet" + "\n" + str(output_text_scores))
 
             new_generation = output_text_scores[0][0].strip()
-            new_sents = list(self.spacy_object(new_generation).sents)
+            # NOTE: Changed to use my own sentence splitter because spacy dependencies were conflicting with new one needed for openai
+            # new_sents = list(self.spacy_object(new_generation).sents)
+            new_sents = split_sentences(new_generation)
             if new_sents:
-                new_generation = new_sents[0].text
+                # new_generation = new_sents[0].text
+                new_generation = new_sents[0]
                 new_state.data[f"generated_{self.generation_type}"].append(new_generation)
 
                 if self.answer_extractor_regex.match(new_generation):

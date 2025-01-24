@@ -16,15 +16,14 @@ from dataset import get_BRIGHT_dataset, get_MATH_dataset, get_paragraph_text
 
 app = FastAPI()
 query_count = 0
-
 DATASET_NAME = "BRIGHT"
+
 if DATASET_NAME == "BRIGHT":
     documents, doc_ids = get_BRIGHT_dataset()
 elif DATASET_NAME == "MATH":
     documents, doc_ids = get_MATH_dataset()
 else:
     raise Exception(f"Unknown dataset_name {DATASET_NAME}")
-
 
 
 def get_model(peft_model_name):
@@ -142,7 +141,7 @@ def retrieval_repllama(queries,query_ids,documents,doc_ids,task,instructions,mod
     return get_scores(query_ids=query_ids,doc_ids=doc_ids,scores=scores,excluded_ids=excluded_ids)
 
 
-def scores_to_output(scores):
+def scores_to_output(scores, corpus_name):
     # output needs to be list of the following:
     '''
     {
@@ -159,18 +158,30 @@ def scores_to_output(scores):
 
     output = []
     for query_id, doc_scores in scores.items():
-        for doc_id, score in doc_scores.items():
+        for doc_id, score in doc_scores:
             output.append({
                 "id": doc_id,
                 "title": "title",
-                "paragraph_text": get_paragraph_text(DATASET_NAME, doc_id),
+                "paragraph_text": documents[doc_ids.index(doc_id)],
                 "url": "",
                 "is_abstract": False,
                 "paragraph_index": 0,
                 "score": score,
-                "corpus_name": DATASET_NAME
+                "corpus_name": corpus_name
             })
     return output
+
+
+def retrieval_dummy(queries, query_ids, documents, doc_ids, **kwargs):
+    result = {}
+    score = 0
+    for query_id in query_ids:
+        result[query_id] = {}
+        for doc_id in doc_ids:
+            result[query_id][doc_id] = score
+            score += 1
+    return result
+
 
 
 @app.get("/")
@@ -179,7 +190,10 @@ async def index():
 
 @app.post("/retrieve/")
 async def retrieve(arguments: Request):  # see the corresponding method in unified_retriever.py
+    global query_count
     arguments = await arguments.json()
+    
+    print(arguments)
     '''
      arguments = {
             # choices: "retrieve_from_elasticsearch", "retrieve_from_blink",
@@ -193,17 +207,27 @@ async def retrieve(arguments: Request):  # see the corresponding method in unifi
     '''
     query_count += 1
     start_time = perf_counter()
-    scores = retrieval_repllama(queries=arguments['query_text'],
-                                query_ids=query_count,
-                                documents=documents,
-                                doc_ids=doc_ids,
-                                task="Retrieve", #TODO: idk what this does, seems like everything down doesn't matter, might want to remove chaching stuff
-                                instructions=[''],
-                                model_id='1',
-                                cache_dir='./cache',
-                                excluded_ids=[],
-                                long_context='',
-                                **arguments['kwargs'])
+    # scores = retrieval_repllama(queries=arguments['query_text'],
+    #                             query_ids=query_count,
+    #                             documents=documents,
+    #                             doc_ids=doc_ids,
+    #                             task="Retrieve", #TODO: idk what this does, seems like everything down doesn't matter, might want to remove chaching stuff
+    #                             instructions=[''],
+    #                             model_id='1',
+    #                             cache_dir='./cache',
+    #                             excluded_ids=[],
+    #                             long_context='')
+    
+    scores = retrieval_dummy(queries=arguments['query_text'],
+                            query_ids=[query_count,],
+                            documents=documents[:100],
+                            doc_ids=doc_ids[:100])
+    
+    
+    # Limit the number of hits to the max_hits_count
+    for query_id, doc_scores in scores.items():
+        scores[query_id] = sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)[: arguments['max_hits_count']]
+    
     end_time = perf_counter()
     
-    return {"retrieval": scores_to_output(scores), "time_in_seconds": round(end_time - start_time, 1)}
+    return {"retrieval": scores_to_output(scores, arguments['corpus_name']), "time_in_seconds": round(end_time - start_time, 1)}

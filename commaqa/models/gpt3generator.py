@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 cache = Cache(os.path.expanduser("~/.cache/gpt3calls"))
 
-MODEL_NAME = "gpt-3.5-turbo-instruct"
+MODEL_NAME = "davinci-002"
 client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
@@ -81,15 +81,15 @@ def openai_call(
 @lru_cache(maxsize=1)
 def get_tokenizer():
     # must fetch tokenizer from transformers to use with current openai client
-    from transformers import AutoTokenizer
-    return AutoTokenizer.from_pretrained(MODEL_NAME)
-    # return tiktoken.encoding_for_model("gpt-3.5-turbo")
+    # from transformers import AutoTokenizer
+    # return AutoTokenizer.from_pretrained(MODEL_NAME)
+    return tiktoken.encoding_for_model(MODEL_NAME)
 
 
 class GPT3Generator:
     def __init__(
         self,
-        model=MODEL_NAME,
+        engine=MODEL_NAME,
         temperature=0,
         max_tokens=300,
         top_p=1,
@@ -102,13 +102,14 @@ class GPT3Generator:
         logprobs=0,
         remove_method="first",
     ):
-        self.model = model
+        print("-" * 100, "ENGINE", engine)
+        self.model = MODEL_NAME
         self.logprobs = logprobs
         self.n = n
         self.best_of = best_of
         self.presence_penalty = presence_penalty
         self.frequency_penalty = frequency_penalty
-        self.max_tokens = max_tokens
+        self.max_tokens = max_tokens # idk if i can hardcodde
         self.top_p = top_p
         self.stop = stop
         self.temperature = temperature

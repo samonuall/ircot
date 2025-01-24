@@ -4,7 +4,7 @@ import json
 import random
 import copy
 import re
-
+from commaqa.inference.ircot import split_sentences
 
 random.seed(13370)  # Don't change.
 
@@ -20,24 +20,26 @@ def read_jsonl(file_path: str) -> List[Dict]:
     return instances
 
 
-@lru_cache(maxsize=None)
-def get_spacy_object():
-    import spacy
+# @lru_cache(maxsize=None)
+# def get_spacy_object():
+#     import spacy
 
-    return spacy.load("en_core_web_sm")
+#     return spacy.load("en_core_web_sm")
 
 
 def clip_paragraph_text(paragraph_text: str, max_tokens: int = 250) -> str:
-    spacy_object = get_spacy_object()
-    paragraph_object = spacy_object(paragraph_text)
-    paragraph_sents = paragraph_object.sents
+    # spacy_object = get_spacy_object()
+    # paragraph_object = spacy_object(paragraph_text)
+    # paragraph_sents = paragraph_object.sents
+    paragraph_sents = split_sentences(paragraph_text)
 
     clipped_paragraph_tokens = 0
     clipped_paragraph_text = ""
     for sent in paragraph_sents:
         if clipped_paragraph_tokens + len(sent) >= max_tokens:
             break
-        clipped_paragraph_text += sent.text_with_ws
+        # clipped_paragraph_text += sent.text_with_ws
+        clipped_paragraph_text += sent
         clipped_paragraph_tokens += len(sent)
     return clipped_paragraph_text
 

@@ -8,7 +8,7 @@ from dateutil.parser import parse
 from commaqa.execution.llm_qa_model import LLMQAModel
 from commaqa.inference.data_instances import QuestionAnsweringStep
 from commaqa.inference.model_search import ParticipantModel
-from commaqa.inference.ircot import para_to_text, add_and_reorder_if_pinned, get_spacy_object
+from commaqa.inference.ircot import para_to_text, add_and_reorder_if_pinned, split_sentences  #, get_spacy_object
 
 
 random.seed(100)  # Don't change
@@ -129,9 +129,9 @@ class LLMQAParticipantModel(ParticipantModel):
             answer = list(dict.fromkeys(answer).keys())
 
         if self.store_sents_in_generated_sentences:
-            spacy_object = get_spacy_object()
-            state.data["generated_sentences"] = [sent.text_with_ws for sent in spacy_object(answer).sents]
-
+            # spacy_object = get_spacy_object()
+            # state.data["generated_sentences"] = [sent.text_with_ws for sent in spacy_object(answer).sents]
+            state.data["generated_sentences"] = split_sentences(answer)
         return self.update_state(answer=answer, state=state)
 
 
