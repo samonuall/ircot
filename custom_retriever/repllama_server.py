@@ -9,8 +9,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 from peft import PeftModel, PeftConfig
 from transformers import AutoModel
 from time import perf_counter
-
+from rank_bm25 import BM25Okapi
+from typing import List, Tuple
+import argparse
 from dataset import get_BRIGHT_dataset, get_MATH_dataset, get_paragraph_text
+import uvicorn
 
 
 
@@ -183,6 +186,52 @@ def retrieval_dummy(queries, query_ids, documents, doc_ids, **kwargs):
     return result
 
 
+# Store the BM25 index and mapping globally or within a suitable scope
+bm25_index = None
+
+def create_bm25_index(documents: List[str], doc_ids: List[str]) -> None:
+    """
+    Creates a BM25 index from a list of documents and their corresponding IDs.
+
+    Args:
+        documents (List[str]): List of document strings.
+        doc_ids (List[str]): List of document IDs corresponding to the documents.
+    """
+    print("Creating BM25 index...")
+    global bm25_index, doc_id_mapping
+    # Tokenize the documents
+    tokenized_docs = [doc.lower().split() for doc in documents]
+    # Initialize BM25 index
+    bm25_index = BM25Okapi(tokenized_docs)
+    # Store the document IDs in the same order as the tokens
+    print("BM25 index created successfully.")
+
+
+
+def bm25_search(queries: List[str], **kwargs) -> List[Tuple[str, float]]:
+    """
+    Performs a BM25 search over the indexed documents.
+
+    Args:
+        query (str): The search query string.
+        top_k (int, optional): The number of top results to return. Defaults to 10.
+
+    Returns:
+        List[Tuple[str, float]]: A list of tuples containing document IDs and their BM25 scores.
+    """
+    if bm25_index is None:
+        raise ValueError("BM25 index has not been created. Please run create_bm25_index first.")
+    
+    # Tokenize the query
+    scores = {}
+    for query_id, q in enumerate(tqdm(queries)):
+        tokenized_query = q.lower().split()
+        # Get BM25 scores
+        scores[query_id] = {doc_id: score for doc_id, score in zip(doc_ids, bm25_index.get_scores(tokenized_query))}
+    
+    return scores
+    
+
 
 @app.get("/")
 async def index():
@@ -192,8 +241,6 @@ async def index():
 async def retrieve(arguments: Request):  # see the corresponding method in unified_retriever.py
     global query_count
     arguments = await arguments.json()
-    
-    print(arguments)
     '''
      arguments = {
             # choices: "retrieve_from_elasticsearch", "retrieve_from_blink",
@@ -218,10 +265,12 @@ async def retrieve(arguments: Request):  # see the corresponding method in unifi
     #                             excluded_ids=[],
     #                             long_context='')
     
-    scores = retrieval_dummy(queries=arguments['query_text'],
+    print(arguments)
+    scores = retriever(queries=[arguments['query_text']],
                             query_ids=[query_count,],
-                            documents=documents[:100],
-                            doc_ids=doc_ids[:100])
+                            documents=documents,
+                            doc_ids=doc_ids,
+                            top_k=arguments['max_hits_count'])
     
     
     # Limit the number of hits to the max_hits_count
@@ -231,3 +280,23 @@ async def retrieve(arguments: Request):  # see the corresponding method in unifi
     end_time = perf_counter()
     
     return {"retrieval": scores_to_output(scores, arguments['corpus_name']), "time_in_seconds": round(end_time - start_time, 1)}
+
+
+if __name__ == "__main__":
+    # parser with --retrieval_type bm25, dummy, repllama
+    global retriever
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--retrieval_type", type=str, default="dummy", choices=["bm25", "dummy", "repllama"])
+    args = parser.parse_args()
+
+    if args.retrieval_type == "bm25":
+        create_bm25_index(documents, doc_ids)
+        retriever = bm25_search
+    elif args.retrieval_type == "dummy":
+        retriever = retrieval_dummy
+    elif args.retrieval_type == "repllama":
+        retriever = retrieval_repllama
+    
+    # run the server with watching for changes
+    uvicorn.run(app, host="0.0.0.0", port=8000)

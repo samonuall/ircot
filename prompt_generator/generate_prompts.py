@@ -65,7 +65,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Generate prompts.")
     parser.add_argument(
-        "dataset_name", type=str, help="dataset_name", choices={"hotpotqa", "2wikimultihopqa", "musique", "iirc"}
+        "dataset_name", type=str, help="dataset_name", choices={"hotpotqa", "2wikimultihopqa", "musique", "iirc", "math"}
     )
     args = parser.parse_args()
 

@@ -7,6 +7,11 @@ from tqdm import tqdm
 from datasets import load_dataset
 
 
+def create_prompts_for_math(instances: List[Dict]):
+    pass
+
+
+
 def write_math_instances_to_filepath(instances: List[Dict], full_filepath: str):
     """
     Process and write MATH dataset instances to a JSONL file.
@@ -35,6 +40,7 @@ def write_math_instances_to_filepath(instances: List[Dict], full_filepath: str):
             processed_instance["answers_objects"] = [answers_object]
             
             # Use full solution as context
+            # TODO: actually don't do this
             processed_instance["contexts"] = [
                 {
                     "idx": 0,

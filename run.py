@@ -24,6 +24,11 @@ from lib import (
 
 
 dataset_to_prompt_set_to_qids = {
+    "math": {
+        "1": ["5a835abe5542996488c2e426"],
+        "2": ["5a835abe5542996488c2e426"],
+        "3": ["5a835abe5542996488c2e426"],
+    },
     "hotpotqa": {
         "1": [
             "5abb14bd5542992ccd8e7f07",

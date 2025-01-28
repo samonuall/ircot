@@ -1,0 +1,59 @@
+# METADATA: {"qid": "5a835abe5542996488c2e426"}
+\begin{definition}[Definition:Asymptote] :500pxrightthumbAsymptotes to $y = x + \dfrac 1 x$ (blue): [[Definition:Y-Axis$y$-axis, and the line $x = y$ (red)]] Let $C$ be a curve in the plane. Let $L$ be a straight (infinite) line such that the distance between $C$ and $L$ approaches zero as they tend to infinity. Then $L$ is an '''asymptote to''' (or '''of''') $C$. \end{definition}
+
+\begin{definition}[Definition:Rational Function] Let $F$ be a field. Let $P: F \to F$ and $Q: F \to F$ be polynomial functions on $F$. Let $S$ be the set $F$ from which all the roots of $Q$ have been removed. That is: :$S = F \setminus \set {x \in F: \map Q x = 0}$ Then the equation $y = \dfrac {\map P x} {\map Q x}$ defines a mapping from $S$ to $F$. Such a mapping is called a '''rational function'''. The concept is usually encountered where the polynomial functions $P$ and $Q$ are either real or complex: \end{definition}
+
+Q: How many vertical asymptotes does the graph of $y=\frac{2}{x^2+x-6}$ have?
+A: The denominator of the rational function factors into $x^2+x-6=(x-2)(x+3)$. Since the numerator is always nonzero, there is a vertical asymptote whenever the denominator is $0$, which occurs for $x = 2$ and $x = -3$. Therefore, the graph has $\boxed{2}$ vertical asymptotes.
+
+# METADATA: {"qid": "5a835abe5542996488c2e426"}
+\begin{definition}[Definition: Ratio] A ratio is a comparison of two or more quantities, often expressed as a fraction. It indicates how many times one quantity contains or is contained within another. For example, if there are 3 red balls and 5 blue balls, the ratio of red balls to blue balls is 3:5 or 53 . \end{definition}  
+
+\begin{definition}[Definition: Proportion] A proportion is an equation that states that two ratios are equal. It can be written in the form ba =dc or a:b=c:d, where b and d are not zero. Proportions are used to solve problems involving scaling, comparison, and finding unknown quantities based on given ratios. \end{definition}  
+
+\begin{definition}[Definition: Multiplying Fractions] To multiply fractions, multiply the numerators together and multiply the denominators together.
+
+That is, for any numbers a, b, c, and d where b=0 and d=0: [\frac{a}{b} \cdot \frac{c}{d} = \frac{a \cdot c}{b \cdot d}.]For example, 32 ⋅75 =3⋅72⋅5 =2110 . \end{definition}
+
+
+Q: The only garments that a particular factory produces are dresses and shirts. It produces three dresses for every five shirts it makes. If the factory produced a total of 72 garments today, how many dresses did it make?
+A: If the factory produces 3 dresses for every 5 shirts, that means it produces 3 dresses out of every 8 garments. So we multiply the fraction $\frac{3}{8}$ by the number of garments, 72, and get $\frac{3}{8}\cdot72=3\cdot9=\boxed{27}$ dresses.
+
+# METADATA: {"qid": "5a835abe5542996488c2e426"}
+\begin{definition}[Definition: Exponent] An exponent indicates how many times a number (called the base) is multiplied by itself. It is written as a superscript to the right of the base. For example, in the expression 53, the base is 5 and the exponent is 3. This means 5 is multiplied by itself three times: 53=5⋅5⋅5=125. \end{definition}  
+
+\begin{definition}[Definition: Properties of Exponents] Properties of exponents are rules that govern how exponents behave in mathematical expressions. Some key properties include:  
+
+
+* Product of Powers: xm⋅xn=xm+n
+* Quotient of Powers: xnxm =xm−n (where x=0)   
+* Power of a Power: (xm)n=xm⋅n
+* Zero Exponent: x0=1 (where x=0)
+* Negative Exponent: x−n=xn1 (where x=0) \end{definition}
+
+\begin{definition}[Definition: Multiplying Fractions Less Than 1] When multiplying a positive fraction less than 1 by another positive fraction less than 1, the product is always smaller than either of the original fractions. This is because multiplying by a fraction less than 1 represents taking a part of the original quantity, resulting in a smaller value. \end{definition}
+
+Q: The expression $\left(\frac{1}{23} \right)^{1000}$ is closest to what integer?
+A: For this problem, we do not actually need to multiply out the whole thing, and find out exactly what $\left(\frac{1}{23} \right)^{1000}$ equals. That would take a long time! Instead, realize that when we multiply a small fraction like this by itself, the result is smaller than our original fraction. Then if we multiply that result by the original fraction again, the result will be even smaller. Now imagine if we do this $1000$ times. The final result will be a $\emph{very}$ small fraction, close to the integer $\boxed{0}$.
+
+# METADATA: {"qid": "5a835abe5542996488c2e426"}
+
+\begin{definition}[Definition: Polynomial Addition] To add polynomials, combine the coefficients of like terms. Like terms are terms that have the same variables raised to the same powers. For example, 3x2y and −5x2y are like terms, while 2x3 and 4x2 are not. \end{definition}
+
+\begin{definition}[Definition: Simplifying Polynomials] Simplifying a polynomial means writing it in a more concise and standard form. This typically involves:
+* Combining like terms: Adding or subtracting the coefficients of terms that have the same variables raised to the same powers.
+* Ordering terms: Arranging the terms in descending order of their exponents (degrees).
+* Removing unnecessary terms: Eliminating terms with zero coefficients or redundant parentheses. \end{definition}
+
+Q: Let $f(y) = y^4 -3y^3 +y - 3$ and $g(y) = y^3 + 7y^2 -2$. Find $f(y) + g(y)$. Write your answer as a polynomial with terms of decreasing degree.
+A: We see that $f(y) + g(y) = y^4 -3y^3+y-3 +y^3+7y^2-2.$ Simplifying, we get $\boxed{y^4-2y^3+7y^2+y-5}$.
+
+# METADATA: {"qid": "5a835abe5542996488c2e426"}
+
+\begin{definition}[Definition: Permutations] A permutation is an arrangement of objects in a specific order. The number of permutations of n distinct objects is n!, which is read as "n factorial" and is calculated as n!=n⋅(n−1)⋅(n−2)⋅...⋅2⋅1. For example, the number of permutations of the letters A, B, and C is 3!=3⋅2⋅1=6. \end{definition}  
+\begin{definition}[Definition: Permutations with Repetition] When objects can be repeated within an arrangement, the number of permutations is calculated differently. If you have n objects and want to arrange them in a sequence of length r, allowing for repetition, the number of permutations is nr. For example, the number of 3-letter words you can make from the letters A, B, C, and D, allowing repetition, is 43=64. \end{definition}
+\begin{definition}[Definition: Complementary Counting] Complementary counting is a counting technique where instead of counting the desired outcomes directly, you count the total number of outcomes and subtract the number of undesired outcomes. This is often easier than directly counting the desired outcomes. \end{definition}
+\begin{definition}[Definition: Combinatorics] Combinatorics is the branch of mathematics that deals with counting, arranging, and combining objects. It involves techniques for determining the number of possible outcomes in various situations, such as selecting items from a set, arranging objects in a sequence, or distributing objects into groups. \end{definition}
+
+Q: How many 3-letter words can we make from the letters A, B, C, and D, if we are allowed to repeat letters, and we must use the letter A at least once? (Here, a word is an arbitrary sequence of letters.)
+A: There are $4^3$ three letter words from A, B, C, and D, and there are $3^3$ three letter words from just B, C, and D. There must, then, be $4^3 - 3^3=64-27 = \boxed{37}$ words from A, B, C, and D containing at least one A.

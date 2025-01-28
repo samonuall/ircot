@@ -12,7 +12,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Save and sample data")
     parser.add_argument(
-        "dataset_name", type=str, help="dataset name.", choices=("hotpotqa", "2wikimultihopqa", "musique", "iirc")
+        "dataset_name", type=str, help="dataset name.", choices=("hotpotqa", "2wikimultihopqa", "musique", "iirc", "math")
     )
     parser.add_argument("set_name", type=str, help="set name.", choices=("dev", "test"))
     args = parser.parse_args()
