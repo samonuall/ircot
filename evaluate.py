@@ -23,6 +23,28 @@ from metrics.drop_answer_em_f1 import DropAnswerEmAndF1
 from metrics.support_em_f1 import SupportEmF1Metric
 from metrics.answer_support_recall import AnswerSupportRecallMetric
 
+from math_equivalence import _strip_string
+
+
+# def answer_extractor(potentially_cot: str) -> str:
+#     # In a few experiments I forgot the configuring the answer extractor part
+#     # and so the final answer is a cot chain instead. Instead of having to do
+#     # all those exps again, I'm just doing answer_extraction here. This needs
+#     # to be fixed later though.
+
+#     if potentially_cot.startswith('"') and potentially_cot.endswith('"'):
+#         potentially_cot = potentially_cot[1:-1]
+
+#     cot_regex = re.compile(".* answer is:? (.*)\\.?")
+#     match = cot_regex.match(potentially_cot)
+#     if match:
+#         output = match.group(1)
+#         if output.endswith("."):
+#             output = output[:-1]
+#     else:
+#         output = potentially_cot
+
+#     return output
 
 def answer_extractor(potentially_cot: str) -> str:
     # In a few experiments I forgot the configuring the answer extractor part
@@ -33,15 +55,14 @@ def answer_extractor(potentially_cot: str) -> str:
     if potentially_cot.startswith('"') and potentially_cot.endswith('"'):
         potentially_cot = potentially_cot[1:-1]
 
-    cot_regex = re.compile(".* answer is:? (.*)\\.?")
-    match = cot_regex.match(potentially_cot)
-    if match:
-        output = match.group(1)
-        if output.endswith("."):
-            output = output[:-1]
+    answer_index = potentially_cot.find("\\boxed")
+    if answer_index != -1:
+        extractor = re.compile(r"\\boxed\{((?:(?!\\}).)*)\}")
+        output = _strip_string(extractor.match(potentially_cot[answer_index: ]).group(1))
     else:
         output = potentially_cot
 
+    print("answer_extractor", "-" * 100, output)
     return output
 
 
@@ -73,6 +94,7 @@ def evaluate_by_dicts(
 
         if prediction_type == "answer":
             prediction = [answer_extractor(_prediction) for _prediction in prediction]  # Temporary.
+            print("ground truth", "-" * 100, ground_truth)
             metrics[0](prediction, [ground_truth])
             metrics[1](prediction, ground_truth)
         elif prediction_type in ("titles", "pids", "real_pids"):
@@ -365,6 +387,8 @@ def load_ground_truths(
         else:
             raise Exception("Unknown prediction_type.")
 
+    
+    print("id_to_ground_truths", "-" * 100, id_to_ground_truths)
     return id_to_ground_truths
 
 

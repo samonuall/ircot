@@ -147,7 +147,6 @@ class GPT3Generator:
         #     tokenizer_model_name="gpt2",  # did this before tiktoken was released.
         #     last_is_test_example=True,
         # )
-        print("-" * 100, "PROMPT", prompt)
         
         arguments = {
             "model": self.model,
@@ -224,5 +223,4 @@ class GPT3Generator:
             else:
                 output_seq_score.append((choice.text, index))
 
-        print("-" * 100, "OUTPUT TEXT", response.choices)
         return sorted(output_seq_score, key=lambda x: x[1])

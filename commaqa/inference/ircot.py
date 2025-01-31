@@ -17,6 +17,7 @@ from commaqa.models.llm_client_generator import LLMClientGenerator
 from commaqa.inference.dataset_readers import get_pid_for_title_paragraph_text
 
 import regex
+from math_equivalence import _strip_string
 
 
 random.seed(100)  # Don't change.
@@ -27,6 +28,17 @@ random.seed(100)  # Don't change.
 #     import spacy
 
 #     return spacy.load("en_core_web_sm")
+
+def extract_answer(sentence):
+        answer_index = sentence.find("\\boxed")
+        if answer_index != -1:
+            answer_extractor = re.compile(r"\\boxed\{((?:(?!\\}).)*)\}")
+            answer = _strip_string(answer_extractor.match(sentence[answer_index: ]).group(1))
+            print("answer", "-" * 100, answer)
+            return answer
+        else:
+            return None
+        
 
 def split_sentences(text):
     """
@@ -804,7 +816,8 @@ class StepByStepCOTGenParticipant(ParticipantModel):
         assert generation_type in ("sentences", "queries")
 
         self.add_context = add_context
-        self.answer_extractor_regex = re.compile(answer_extractor_regex)
+        # NOTE: added this regex in manually for math
+        self.answer_extractor_regex = re.compile("\\boxed\{((?:(?!\\}).)*)\}")
         self.answer_extractor_remove_last_fullstop = answer_extractor_remove_last_fullstop
         self.terminal_return_type = terminal_return_type
         self.generation_type = generation_type
@@ -885,8 +898,9 @@ class StepByStepCOTGenParticipant(ParticipantModel):
                 new_generation = new_sents[0]
                 new_state.data[f"generated_{self.generation_type}"].append(new_generation)
 
-                if self.answer_extractor_regex.match(new_generation):
-                    return_answer = self.answer_extractor_regex.match(new_generation).group(1)
+                answer = extract_answer(new_generation)
+                if answer:
+                    return_answer = answer
                     if self.answer_extractor_remove_last_fullstop and return_answer.endswith("."):
                         return_answer = return_answer[:-1]
                     exit_generation = True
@@ -966,7 +980,8 @@ class StepByStepExitControllerParticipant(ParticipantModel):
 
     def return_model_calls(self):
         return {"step_by_step_exit_controller": self.num_calls}
-
+    
+    
     def query(self, state, debug=False):
 
         if self.generation_key not in state.data:
@@ -1000,10 +1015,11 @@ class StepByStepExitControllerParticipant(ParticipantModel):
         else:
             return_answer = " ".join(generated_sentences)
 
-        if generated_sentences and self.answer_extractor_regex.match(generated_sentences[-1]):
-            return_answer = self.answer_extractor_regex.match(generated_sentences[-1]).group(1)
-            if self.answer_extractor_remove_last_fullstop and return_answer.endswith("."):
-                return_answer = return_answer[:-1]
+        answer = extract_answer(generated_sentences[-1]) 
+        if generated_sentences and answer:
+            return_answer = answer
+            # if self.answer_extractor_remove_last_fullstop and return_answer.endswith("."):
+            #     return_answer = return_answer[:-1]
             exit_generation = True
 
         if exit_generation:

@@ -38,11 +38,12 @@ class DropAnswerEmAndF1(Metric):
         assert isinstance(list_of_ground_truth_answer_list[0], (list, tuple))
         assert isinstance(list_of_ground_truth_answer_list[0][0], str)
 
-        predicted_answer_list = [ftfy.fix_text(e) for e in predicted_answer_list]
-        list_of_ground_truth_answer_list = [
-            [ftfy.fix_text(e) for e in ground_truth_answer_list]
-            for ground_truth_answer_list in list_of_ground_truth_answer_list
-        ]
+        # NOTE: comment out for math questions
+        # predicted_answer_list = [ftfy.fix_text(e) for e in predicted_answer_list]
+        # list_of_ground_truth_answer_list = [
+        #     [ftfy.fix_text(e) for e in ground_truth_answer_list]
+        #     for ground_truth_answer_list in list_of_ground_truth_answer_list
+        # ]
 
         exact_match, f1_score, prec_score, recall_score = metric_max_over_ground_truths(
             drop_em_and_f1, predicted_answer_list, list_of_ground_truth_answer_list
