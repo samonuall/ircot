@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 cache = Cache(os.path.expanduser("~/.cache/gpt3calls"))
 
 MODEL_NAME = "davinci-002"
-client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"), base_url="http://localhost:8000/v1")
 
 
 @cache.memoize()

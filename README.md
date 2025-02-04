@@ -301,3 +301,30 @@ If you find this work useful, consider citing it:
     pages = "10014--10037",
 }
 ```
+
+# Sam Changes
+
+First, run the server that hosts the retriever by using 
+
+```bash
+python custom_retriever --repllama
+```
+
+This downloads the theoremqa dataset for the corpus and will also download the repllama retriever for inference.
+
+Next, to use a custom model for the generator, you will have to use vllm's openai server. 
+Example:
+
+'''bash
+vllm serve <huggingface model> --dtype auto --api-key abc123
+'''
+
+Then set the OPENAI_API_KEY env variable to abc123.
+
+Finally, once the retriever and generator are set up, to run experiments run
+
+```bash
+./reproduce.sh ircot_qa codex math
+```
+
+This follows the same process as detailed above, and metrics from the runs will be stored in the predictions/ directory.
