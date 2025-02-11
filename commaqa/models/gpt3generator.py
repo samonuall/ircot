@@ -81,9 +81,9 @@ def openai_call(
 @lru_cache(maxsize=1)
 def get_tokenizer():
     # must fetch tokenizer from transformers to use with current openai client
-    # from transformers import AutoTokenizer
-    # return AutoTokenizer.from_pretrained(MODEL_NAME)
-    return tiktoken.encoding_for_model(MODEL_NAME)
+    from transformers import AutoTokenizer
+    return AutoTokenizer.from_pretrained(MODEL_NAME)
+    # return tiktoken.encoding_for_model(MODEL_NAME)
 
 
 class GPT3Generator:
